@@ -34,7 +34,7 @@ export class StartBuildsCommand extends BaseCommand {
   }
 
   @Option({
-    flags: '-yaml, --yaml-path [string]',
+    flags: '-yp, --yaml-path [string]',
     description: 'Path to YAML file',
     required: true,
   })
