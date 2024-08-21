@@ -4,6 +4,11 @@ import {Command, Option} from 'nest-commander';
 import {YamlParserService} from '../../services/yaml-parser/yaml-parser.service';
 import {BaseCommand} from '../base/base.command';
 
+interface CommandOptions {
+  yamlPath: string;
+  verbose: boolean;
+}
+
 @Command({name: 'start-builds', description: 'Start multiple builds'})
 export class StartBuildsCommand extends BaseCommand {
   constructor(
@@ -13,13 +18,15 @@ export class StartBuildsCommand extends BaseCommand {
     super();
   }
 
-  async run(
-    passedParams: string[],
-    options?: Record<string, any>,
-  ): Promise<void> {
+  async run(passedParams: string[], options: CommandOptions): Promise<void> {
     this.logger.log(`Passed params: ${passedParams}`);
     this.logger.log(`Options: ${JSON.stringify(options)}`);
-    await this.yamlParserService.parseStartBuildsYaml(options.yamlPath);
+    const yamlFileContents = await this.yamlParserService.openFile(
+      options.yamlPath,
+    );
+    const data =
+      await this.yamlParserService.parseStartBuildsYaml(yamlFileContents);
+    this.logger.log(`Parsed data: ${JSON.stringify(data)}`);
   }
 
   @Option({

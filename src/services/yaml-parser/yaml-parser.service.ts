@@ -1,4 +1,7 @@
+import * as fs from 'node:fs';
+
 import {Injectable, Logger} from '@nestjs/common';
+import * as YAML from 'yaml';
 
 import {StartBuilds} from '../../models/multi-jenkins/StartBuilds.model';
 
@@ -6,10 +9,13 @@ import {StartBuilds} from '../../models/multi-jenkins/StartBuilds.model';
 export class YamlParserService {
   constructor(private readonly logger: Logger) {}
 
-  async parseStartBuildsYaml(yamlFilePath: string): Promise<StartBuilds> {
-    this.logger.log(`Parsing start builds YAML at path: ${yamlFilePath}`);
-    return {
-      hosts: [],
-    };
+  async openFile(filePath: string): Promise<string> {
+    this.logger.log(`Opening file: ${filePath}`);
+    return fs.readFileSync(filePath, 'utf8');
+  }
+
+  async parseStartBuildsYaml(yamlFileContents: string): Promise<StartBuilds> {
+    const data = await YAML.parse(yamlFileContents);
+    return data as StartBuilds;
   }
 }
