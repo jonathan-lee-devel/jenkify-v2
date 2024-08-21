@@ -1,9 +1,9 @@
 import { Command, Option } from 'nest-commander';
 import { Logger } from '@nestjs/common';
-import { AbstractCommand } from './abstract/abstract.command';
+import { BaseCommand } from './base/base.command';
 
 @Command({ name: 'start-builds', description: 'Start multiple builds' })
-export class StartBuildsCommand extends AbstractCommand {
+export class StartBuildsCommand extends BaseCommand {
   constructor(private readonly logger: Logger) {
     super();
   }

@@ -1,9 +1,9 @@
 import { Command, Option } from 'nest-commander';
 import { Logger } from '@nestjs/common';
-import { AbstractCommand } from '../abstract/abstract.command';
+import { BaseCommand } from '../base/base.command';
 
 @Command({ name: 'jenkins-start-build', description: 'Sample command' })
-export class StartBuildCommand extends AbstractCommand {
+export class StartBuildCommand extends BaseCommand {
   constructor(private readonly logger: Logger) {
     super();
   }
