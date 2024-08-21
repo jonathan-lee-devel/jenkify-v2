@@ -18,7 +18,7 @@ export class StartBuildsCommand extends BaseCommand {
     super();
   }
 
-  async run(passedParams: string[], options: CommandOptions): Promise<void> {
+  async run(_passedParams: string[], options: CommandOptions): Promise<void> {
     this.logger.log(`Options: ${JSON.stringify(options)}`);
     const yamlFileContents = await this.yamlParserService.openFile(
       options.yamlPath,
