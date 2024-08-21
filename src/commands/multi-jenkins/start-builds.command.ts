@@ -9,7 +9,6 @@ import {BaseCommand} from '../base/base.command';
 
 interface CommandOptions {
   yamlPath: string;
-  verbose: boolean;
 }
 
 @Command({name: 'start-builds', description: 'Start multiple builds'})
@@ -25,14 +24,11 @@ export class StartBuildsCommand extends BaseCommand {
   async run(_passedParams: string[], options: CommandOptions): Promise<void> {
     const yamlFileContents = await this.yamlParserService.readFile(
       options.yamlPath,
-      options.verbose,
     );
     const startBuilds =
       await this.yamlParserService.parseStartBuildsYaml(yamlFileContents);
     startBuilds.build.hosts.forEach((host) => {
-      if (options.verbose) {
-        this.logger.log(`Processing host: ${JSON.stringify(host)}`);
-      }
+      this.logger.verbose(`Processing host: ${JSON.stringify(host)}`);
       host.jobs.forEach(async (job) => await this.processJob(host, job));
     });
   }
