@@ -25,10 +25,9 @@ export class StartBuildsCommand extends BaseCommand {
     const yamlFileContents = await this.yamlParserService.readFile(
       options.yamlPath,
     );
-    const data =
+    const startBuilds =
       await this.yamlParserService.parseStartBuildsYaml(yamlFileContents);
-    this.logger.log(`Parsed data: ${JSON.stringify(data)}`);
-    data.build.hosts.forEach((host) => {
+    startBuilds.build.hosts.forEach((host) => {
       this.logger.log(`Processing host: ${JSON.stringify(host)}`);
       host.jobs.forEach(async (job) => {
         const jobInfo = await this.jenkinsRestApiService.getBuildInformation(
