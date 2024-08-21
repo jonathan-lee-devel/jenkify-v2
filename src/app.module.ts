@@ -1,5 +1,6 @@
 import { Logger, Module } from '@nestjs/common';
 import { StartBuildCommand } from './commands/jenkins/start-build.command';
+import { StartBuildsCommand } from './commands/start-builds.command';
 
 @Module({
   imports: [],
@@ -10,6 +11,7 @@ import { StartBuildCommand } from './commands/jenkins/start-build.command';
       useFactory: () => new Logger(AppModule.name),
     },
     StartBuildCommand,
+    StartBuildsCommand,
   ],
 })
 export class AppModule {}

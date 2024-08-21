@@ -1,9 +1,9 @@
 import { Command, Option } from 'nest-commander';
 import { Logger } from '@nestjs/common';
-import { AbstractCommand } from '../abstract/abstract.command';
+import { AbstractCommand } from './abstract/abstract.command';
 
-@Command({ name: 'jenkins-start-build', description: 'Sample command' })
-export class StartBuildCommand extends AbstractCommand {
+@Command({ name: 'start-builds', description: 'Start multiple builds' })
+export class StartBuildsCommand extends AbstractCommand {
   constructor(private readonly logger: Logger) {
     super();
   }
@@ -17,10 +17,10 @@ export class StartBuildCommand extends AbstractCommand {
   }
 
   @Option({
-    flags: '-ue, --url-end [string]',
-    description: 'URL end for build',
+    flags: '-yaml, --yaml-path [string]',
+    description: 'Path to YAML file',
   })
-  parseUrlEnd(val: string): string {
+  parseYamlPath(val: string): string {
     return val;
   }
 }
