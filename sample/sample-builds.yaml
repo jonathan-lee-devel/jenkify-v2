@@ -2,15 +2,15 @@ build:
   hosts:
     - url: 'http://localhost:8080'
       jobs:
-        - end: 'job/TestJob'
-        - end: 'job/AnotherTestJob'
+        - path: 'job/TestJob'
+        - path: 'job/AnotherTestJob'
           build-parameters:
             - name: 'GIT_BRANCH'
               value: 'staging'
             - name: 'DEPLOY_TO_PROD'
               value: 'false'
-        - end: 'job/LongRunningJob'
-        - end: 'job/User_Input_Job'
+        - path: 'job/LongRunningJob'
+        - path: 'job/User_Input_Job'
           user-input:
             - id: 'userInput'
               params:
@@ -18,4 +18,4 @@ build:
                   value: 'Test'
                 - name: 'Test'
                   value: 'Test'
-        - end: 'job/SomeOtherJob'
+        - path: 'job/SomeOtherJob'

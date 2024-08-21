@@ -1,6 +1,7 @@
 import {Logger} from '@nestjs/common';
 import {Command, Option} from 'nest-commander';
 
+import {JenkinsRestApiService} from '../../services/jenkins-rest-api/jenkins-rest-api.service';
 import {YamlParserService} from '../../services/yaml-parser/yaml-parser.service';
 import {BaseCommand} from '../base/base.command';
 
@@ -14,6 +15,7 @@ export class StartBuildsCommand extends BaseCommand {
   constructor(
     private readonly logger: Logger,
     private readonly yamlParserService: YamlParserService,
+    private readonly jenkinsRestApiService: JenkinsRestApiService,
   ) {
     super();
   }
@@ -26,6 +28,20 @@ export class StartBuildsCommand extends BaseCommand {
     const data =
       await this.yamlParserService.parseStartBuildsYaml(yamlFileContents);
     this.logger.log(`Parsed data: ${JSON.stringify(data)}`);
+    data.build.hosts.forEach((host) => {
+      this.logger.log(`Processing host: ${JSON.stringify(host)}`);
+      host.jobs.forEach(async (job) => {
+        const jobInfo = await this.jenkinsRestApiService.getBuildInformation(
+          host.url,
+          job.path,
+        );
+        if (jobInfo) {
+          this.logger.log(
+            `Job info retrieved: ${JSON.stringify(jobInfo?.lastBuild)}`,
+          );
+        }
+      });
+    });
   }
 
   @Option({

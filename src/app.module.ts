@@ -1,4 +1,5 @@
 import {Logger, Module} from '@nestjs/common';
+import {ConfigModule} from '@nestjs/config';
 
 import {StartBuildCommand} from './commands/jenkins/start-build.command';
 import {StartBuildsCommand} from './commands/multi-jenkins/start-builds.command';
@@ -9,7 +10,7 @@ import {JenkinsWfApiService} from './services/jenkins-wf-api/jenkins-wf-api.serv
 import {YamlParserService} from './services/yaml-parser/yaml-parser.service';
 
 @Module({
-  imports: [],
+  imports: [ConfigModule.forRoot()],
   controllers: [],
   providers: [
     {
