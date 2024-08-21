@@ -1,8 +1,9 @@
-import { Command, Option } from 'nest-commander';
-import { Logger } from '@nestjs/common';
-import { BaseCommand } from '../base/base.command';
+import {Logger} from '@nestjs/common';
+import {Command, Option} from 'nest-commander';
 
-@Command({ name: 'track-builds', description: 'Track multiple builds' })
+import {BaseCommand} from '../base/base.command';
+
+@Command({name: 'track-builds', description: 'Track multiple builds'})
 export class TrackBuildsCommand extends BaseCommand {
   constructor(private readonly logger: Logger) {
     super();

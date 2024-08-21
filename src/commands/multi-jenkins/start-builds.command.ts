@@ -1,9 +1,10 @@
-import { Command, Option } from 'nest-commander';
-import { Logger } from '@nestjs/common';
-import { BaseCommand } from '../base/base.command';
-import { YamlParserService } from '../../services/yaml-parser/yaml-parser.service';
+import {Logger} from '@nestjs/common';
+import {Command, Option} from 'nest-commander';
 
-@Command({ name: 'start-builds', description: 'Start multiple builds' })
+import {YamlParserService} from '../../services/yaml-parser/yaml-parser.service';
+import {BaseCommand} from '../base/base.command';
+
+@Command({name: 'start-builds', description: 'Start multiple builds'})
 export class StartBuildsCommand extends BaseCommand {
   constructor(
     private readonly logger: Logger,

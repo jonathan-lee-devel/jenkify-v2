@@ -1,4 +1,4 @@
-import { Parameter } from './Parameter.model';
+import {Parameter} from './Parameter.model';
 
 export interface Job {
   path: string;

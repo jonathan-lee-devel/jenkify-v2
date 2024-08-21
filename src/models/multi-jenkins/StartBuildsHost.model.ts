@@ -1,4 +1,4 @@
-import { Job } from './Job.model';
+import {Job} from './Job.model';
 
 export interface StartBuildsHost {
   url: string;

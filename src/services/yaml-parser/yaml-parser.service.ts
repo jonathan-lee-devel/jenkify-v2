@@ -1,5 +1,6 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { StartBuilds } from '../../models/multi-jenkins/StartBuilds.model';
+import {Injectable, Logger} from '@nestjs/common';
+
+import {StartBuilds} from '../../models/multi-jenkins/StartBuilds.model';
 
 @Injectable()
 export class YamlParserService {

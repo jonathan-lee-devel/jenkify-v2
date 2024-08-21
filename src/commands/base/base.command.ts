@@ -1,4 +1,4 @@
-import { CommandRunner, Option } from 'nest-commander';
+import {CommandRunner, Option} from 'nest-commander';
 
 export abstract class BaseCommand extends CommandRunner {
   @Option({

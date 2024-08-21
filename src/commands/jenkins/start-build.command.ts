@@ -1,8 +1,9 @@
-import { Command, Option } from 'nest-commander';
-import { Logger } from '@nestjs/common';
-import { BaseCommand } from '../base/base.command';
+import {Logger} from '@nestjs/common';
+import {Command, Option} from 'nest-commander';
 
-@Command({ name: 'jenkins-start-build', description: 'Sample command' })
+import {BaseCommand} from '../base/base.command';
+
+@Command({name: 'jenkins-start-build', description: 'Sample command'})
 export class StartBuildCommand extends BaseCommand {
   constructor(private readonly logger: Logger) {
     super();
