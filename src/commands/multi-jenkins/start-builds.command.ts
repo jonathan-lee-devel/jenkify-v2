@@ -1,6 +1,8 @@
 import {Logger} from '@nestjs/common';
 import {Command, Option} from 'nest-commander';
 
+import {Job} from '../../models/multi-jenkins/Job.model';
+import {StartBuildsHost} from '../../models/multi-jenkins/StartBuildsHost.model';
 import {JenkinsRestApiService} from '../../services/jenkins-rest-api/jenkins-rest-api.service';
 import {YamlParserService} from '../../services/yaml-parser/yaml-parser.service';
 import {BaseCommand} from '../base/base.command';
@@ -31,17 +33,7 @@ export class StartBuildsCommand extends BaseCommand {
       if (options.verbose) {
         this.logger.log(`Processing host: ${JSON.stringify(host)}`);
       }
-      host.jobs.forEach(async (job) => {
-        const jobInfo = await this.jenkinsRestApiService.getBuildInformation(
-          host.url,
-          job.path,
-        );
-        if (jobInfo) {
-          this.logger.log(
-            `Job info retrieved: ${JSON.stringify(jobInfo?.lastBuild)}`,
-          );
-        }
-      });
+      host.jobs.forEach(async (job) => await this.processJob(host, job));
     });
   }
 
@@ -52,5 +44,17 @@ export class StartBuildsCommand extends BaseCommand {
   })
   parseYamlPath(val: string): string {
     return val;
+  }
+
+  private async processJob(host: StartBuildsHost, job: Job) {
+    const jobInfo = await this.jenkinsRestApiService.getBuildInformation(
+      host.url,
+      job.path,
+    );
+    if (jobInfo) {
+      this.logger.log(
+        `Job info retrieved: ${JSON.stringify(jobInfo?.lastBuild)}`,
+      );
+    }
   }
 }
