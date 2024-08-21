@@ -1,10 +1,15 @@
-import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { Logger, Module } from '@nestjs/common';
+import { StartBuildCommand } from './commands/jenkins/start-build.command';
 
 @Module({
   imports: [],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [],
+  providers: [
+    {
+      provide: Logger,
+      useFactory: () => new Logger(AppModule.name),
+    },
+    StartBuildCommand,
+  ],
 })
 export class AppModule {}
