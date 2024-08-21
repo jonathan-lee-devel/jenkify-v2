@@ -9,8 +9,10 @@ import {StartBuilds} from '../../models/multi-jenkins/StartBuilds.model';
 export class YamlParserService {
   constructor(private readonly logger: Logger) {}
 
-  async readFile(filePath: string): Promise<string> {
-    this.logger.log(`Opening file: ${filePath}`);
+  async readFile(filePath: string, verbose?: boolean): Promise<string> {
+    if (verbose) {
+      this.logger.log(`Opening file: ${filePath}`);
+    }
     return fs.readFileSync(filePath, 'utf8');
   }
 

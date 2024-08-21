@@ -21,14 +21,16 @@ export class StartBuildsCommand extends BaseCommand {
   }
 
   async run(_passedParams: string[], options: CommandOptions): Promise<void> {
-    this.logger.log(`Options: ${JSON.stringify(options)}`);
     const yamlFileContents = await this.yamlParserService.readFile(
       options.yamlPath,
+      options.verbose,
     );
     const startBuilds =
       await this.yamlParserService.parseStartBuildsYaml(yamlFileContents);
     startBuilds.build.hosts.forEach((host) => {
-      this.logger.log(`Processing host: ${JSON.stringify(host)}`);
+      if (options.verbose) {
+        this.logger.log(`Processing host: ${JSON.stringify(host)}`);
+      }
       host.jobs.forEach(async (job) => {
         const jobInfo = await this.jenkinsRestApiService.getBuildInformation(
           host.url,

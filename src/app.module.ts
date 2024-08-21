@@ -15,7 +15,7 @@ import {YamlParserService} from './services/yaml-parser/yaml-parser.service';
   providers: [
     {
       provide: Logger,
-      useFactory: () => new Logger(AppModule.name),
+      useFactory: () => new Logger('Jenkify-v2'),
     },
     StartBuildCommand,
     StartBuildsCommand,

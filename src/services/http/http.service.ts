@@ -5,9 +5,15 @@ import axios, {AxiosBasicCredentials, AxiosResponse} from 'axios';
 export class HttpService {
   constructor(private readonly logger: Logger) {}
 
-  async get(auth: AxiosBasicCredentials, url: string): Promise<AxiosResponse> {
+  async get(
+    auth: AxiosBasicCredentials,
+    url: string,
+    verbose?: boolean,
+  ): Promise<AxiosResponse> {
     let response: AxiosResponse;
-    this.logger.log(`Getting response from ${url}`);
+    if (verbose) {
+      this.logger.log(`GET request to: ${url}`);
+    }
     try {
       response = await axios({
         method: 'get',
@@ -24,8 +30,12 @@ export class HttpService {
     auth: AxiosBasicCredentials,
     url: string,
     body: unknown,
+    verbose?: boolean,
   ): Promise<AxiosResponse> {
     let response: AxiosResponse;
+    if (verbose) {
+      this.logger.log(`POST request to: ${url}`);
+    }
     try {
       response = await axios({
         method: 'post',
