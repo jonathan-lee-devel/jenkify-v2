@@ -1,15 +1,13 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { YamlParserService } from './yaml-parser.service';
+import {TestBed} from '@automock/jest';
+
+import {YamlParserService} from './yaml-parser.service';
 
 describe('YamlParserService', () => {
   let service: YamlParserService;
 
   beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      providers: [YamlParserService],
-    }).compile();
-
-    service = module.get<YamlParserService>(YamlParserService);
+    const {unit} = TestBed.create(YamlParserService).compile();
+    service = unit;
   });
 
   it('should be defined', () => {
