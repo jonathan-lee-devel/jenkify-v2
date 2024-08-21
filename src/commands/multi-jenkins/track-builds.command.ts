@@ -1,9 +1,9 @@
 import { Command, Option } from 'nest-commander';
 import { Logger } from '@nestjs/common';
-import { BaseCommand } from './base/base.command';
+import { BaseCommand } from '../base/base.command';
 
-@Command({ name: 'start-builds', description: 'Start multiple builds' })
-export class StartBuildsCommand extends BaseCommand {
+@Command({ name: 'track-builds', description: 'Track multiple builds' })
+export class TrackBuildsCommand extends BaseCommand {
   constructor(private readonly logger: Logger) {
     super();
   }
@@ -19,6 +19,7 @@ export class StartBuildsCommand extends BaseCommand {
   @Option({
     flags: '-yaml, --yaml-path [string]',
     description: 'Path to YAML file',
+    required: true,
   })
   parseYamlPath(val: string): string {
     return val;
