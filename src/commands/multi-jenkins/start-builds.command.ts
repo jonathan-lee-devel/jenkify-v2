@@ -1,10 +1,14 @@
 import { Command, Option } from 'nest-commander';
 import { Logger } from '@nestjs/common';
 import { BaseCommand } from '../base/base.command';
+import { YamlParserService } from '../../services/yaml-parser/yaml-parser.service';
 
 @Command({ name: 'start-builds', description: 'Start multiple builds' })
 export class StartBuildsCommand extends BaseCommand {
-  constructor(private readonly logger: Logger) {
+  constructor(
+    private readonly logger: Logger,
+    private readonly yamlParserService: YamlParserService,
+  ) {
     super();
   }
 
@@ -14,6 +18,7 @@ export class StartBuildsCommand extends BaseCommand {
   ): Promise<void> {
     this.logger.log(`Passed params: ${passedParams}`);
     this.logger.log(`Options: ${JSON.stringify(options)}`);
+    await this.yamlParserService.parseStartBuildsYaml(options.yamlPath);
   }
 
   @Option({
