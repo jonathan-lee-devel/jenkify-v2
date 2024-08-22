@@ -29,7 +29,12 @@ export class StartBuildsCommand extends BaseCommand {
       await this.yamlParserService.parseStartBuildsYaml(yamlFileContents);
     startBuilds.build.hosts.forEach((host) => {
       this.logger.verbose(`Processing host: ${JSON.stringify(host)}`);
-      host.jobs.forEach(async (job) => await this.processJob(host, job));
+      host.jobs.forEach(async (job) => {
+        const response = await this.processJob(host, job);
+        this.logger.log(
+          `Is ${job.path} started successfully: ${response?.isSuccessfullyKickedOff ?? false}`,
+        );
+      });
     });
   }
 
@@ -42,15 +47,24 @@ export class StartBuildsCommand extends BaseCommand {
     return val;
   }
 
-  private async processJob(host: StartBuildsHost, job: Job) {
+  private async processJob(
+    host: StartBuildsHost,
+    job: Job,
+  ): Promise<{isSuccessfullyKickedOff: boolean}> {
     const jobInfo = await this.jenkinsRestApiService.getBuildInformation(
       host.url,
       job.path,
     );
-    if (jobInfo) {
-      this.logger.log(
-        `Job info retrieved: ${JSON.stringify(jobInfo?.lastBuild)}`,
-      );
+    if (!jobInfo) {
+      return;
     }
+    this.logger.verbose(
+      `Job info retrieved: ${JSON.stringify(jobInfo.lastBuild ?? {})}`,
+    );
+    return this.jenkinsRestApiService.kickOffBuild(
+      host.url,
+      job.path,
+      job.buildParameters,
+    );
   }
 }

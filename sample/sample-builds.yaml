@@ -4,14 +4,14 @@ build:
       jobs:
         - path: 'job/TestJob'
         - path: 'job/AnotherTestJob'
-          build-parameters:
+          buildParameters:
             - name: 'GIT_BRANCH'
               value: 'staging'
             - name: 'DEPLOY_TO_PROD'
               value: 'false'
         - path: 'job/LongRunningJob'
         - path: 'job/User_Input_Job'
-          user-input:
+          userInput:
             - id: 'userInput'
               params:
                 - name: 'Config'
