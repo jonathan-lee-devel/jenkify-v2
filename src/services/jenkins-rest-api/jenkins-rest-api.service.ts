@@ -18,13 +18,9 @@ export class JenkinsRestApiService {
     host: string,
     path: string,
   ): Promise<JenkinsBuildInformation | null> {
-    const auth: AxiosBasicCredentials = {
-      username: this.configService.getOrThrow<string>('JENKINS_USER'),
-      password: this.configService.getOrThrow<string>('JENKINS_TOKEN'),
-    };
     const response = await this.httpService.get(
       `${host}/${path}/api/json`,
-      auth,
+      this.getJenkinsAuthForAxios(),
     );
     if (response?.status !== HttpStatus.OK) {
       this.logger.error(`Response status not 200 OK for ${host}/${path}`);
@@ -38,10 +34,6 @@ export class JenkinsRestApiService {
     path: string,
     buildParameters?: Parameter[],
   ): Promise<{isSuccessfullyKickedOff: boolean}> {
-    const auth: AxiosBasicCredentials = {
-      username: this.configService.getOrThrow<string>('JENKINS_USER'),
-      password: this.configService.getOrThrow<string>('JENKINS_TOKEN'),
-    };
     let buildPath: string = '';
     if (buildParameters && buildParameters.length > 0) {
       const object = {};
@@ -53,7 +45,7 @@ export class JenkinsRestApiService {
     }
     const response = await this.httpService.post(
       `${host}/${path}/build${buildPath}`,
-      auth,
+      this.getJenkinsAuthForAxios(),
     );
     if (response?.status !== HttpStatus.CREATED) {
       this.logger.error(`Failed to kick off build for ${host}/${path}`);
@@ -61,5 +53,12 @@ export class JenkinsRestApiService {
     }
     this.logger.log(`Kicked off build for ${host}/${path}`);
     return {isSuccessfullyKickedOff: true};
+  }
+
+  private getJenkinsAuthForAxios(): AxiosBasicCredentials {
+    return {
+      username: this.configService.getOrThrow<string>('JENKINS_USER'),
+      password: this.configService.getOrThrow<string>('JENKINS_TOKEN'),
+    };
   }
 }
