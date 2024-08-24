@@ -32,7 +32,7 @@ export class StartBuildsCommand extends BaseCommand {
       host.jobs.forEach(async (job) => {
         const response = await this.processJob(host, job);
         this.logger.log(
-          `Is ${job.path} started successfully: ${response?.isSuccessfullyKickedOff ?? false}`,
+          `Is ${job.path} started successfully: ${response?.buildResponse?.isSuccessfullyKickedOff ?? false} with build number: #${response?.mostRecentBuildNumber}`,
         );
       });
     });
@@ -50,21 +50,27 @@ export class StartBuildsCommand extends BaseCommand {
   private async processJob(
     host: StartBuildsHost,
     job: Job,
-  ): Promise<{isSuccessfullyKickedOff: boolean}> {
+  ): Promise<{
+    buildResponse: {isSuccessfullyKickedOff: boolean};
+    mostRecentBuildNumber: number;
+  }> {
     const jobInfo = await this.jenkinsRestApiService.getBuildInformation(
       host.url,
       job.path,
     );
-    if (!jobInfo) {
+    if (!jobInfo?.lastBuild) {
       return;
     }
     this.logger.verbose(
       `Job info retrieved: ${JSON.stringify(jobInfo.lastBuild ?? {})}`,
     );
-    return this.jenkinsRestApiService.kickOffBuild(
-      host.url,
-      job.path,
-      job.buildParameters,
-    );
+    return {
+      mostRecentBuildNumber: jobInfo.lastBuild.number,
+      buildResponse: await this.jenkinsRestApiService.kickOffBuild(
+        host.url,
+        job.path,
+        job.buildParameters,
+      ),
+    };
   }
 }
