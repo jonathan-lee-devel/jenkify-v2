@@ -3,7 +3,7 @@ import * as fs from 'node:fs';
 import {Injectable, Logger} from '@nestjs/common';
 import * as YAML from 'yaml';
 
-import {StartBuilds} from '../../models/multi-jenkins/StartBuilds.model';
+import {StartBuilds} from '../../models/multi-jenkins/start/StartBuilds.model';
 
 @Injectable()
 export class YamlParserService {

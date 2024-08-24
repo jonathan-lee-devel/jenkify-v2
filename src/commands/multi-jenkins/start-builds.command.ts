@@ -1,8 +1,8 @@
 import {Logger} from '@nestjs/common';
 import {Command, Option} from 'nest-commander';
 
-import {Job} from '../../models/multi-jenkins/Job.model';
-import {StartBuildsHost} from '../../models/multi-jenkins/StartBuildsHost.model';
+import {StartBuildsHost} from '../../models/multi-jenkins/start/StartBuildsHost.model';
+import {StartJob} from '../../models/multi-jenkins/start/StartJob.model';
 import {JenkinsRestApiService} from '../../services/jenkins-rest-api/jenkins-rest-api.service';
 import {YamlParserService} from '../../services/yaml-parser/yaml-parser.service';
 import {BaseCommand} from '../base/base.command';
@@ -49,7 +49,7 @@ export class StartBuildsCommand extends BaseCommand {
 
   private async processJob(
     host: StartBuildsHost,
-    job: Job,
+    job: StartJob,
   ): Promise<{
     buildResponse: {isSuccessfullyKickedOff: boolean};
     mostRecentBuildNumber: number;
