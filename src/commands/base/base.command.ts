@@ -1,3 +1,16 @@
-import {CommandRunner} from 'nest-commander';
+import {CommandRunner, Option} from 'nest-commander';
 
-export abstract class BaseCommand extends CommandRunner {}
+export interface BaseCommandOptions {
+  verbose: boolean;
+}
+
+export abstract class BaseCommand extends CommandRunner {
+  @Option({
+    flags: '-v, --verbose [boolean]',
+    description: 'Whether to log verbosely',
+    required: false,
+  })
+  protected parseVerbose(val: string): string {
+    return val;
+  }
+}

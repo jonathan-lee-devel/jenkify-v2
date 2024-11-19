@@ -5,9 +5,9 @@ import {StartBuildsHost} from '../../models/multi-jenkins/start/StartBuildsHost.
 import {StartJob} from '../../models/multi-jenkins/start/StartJob.model';
 import {JenkinsRestApiService} from '../../services/jenkins-rest-api/jenkins-rest-api.service';
 import {YamlParserService} from '../../services/yaml-parser/yaml-parser.service';
-import {BaseCommand} from '../base/base.command';
+import {BaseCommand, BaseCommandOptions} from '../base/base.command';
 
-interface CommandOptions {
+interface CommandOptions extends BaseCommandOptions {
   yamlPath: string;
 }
 
@@ -22,6 +22,8 @@ export class StartBuildsCommand extends BaseCommand {
   }
 
   async run(_passedParams: string[], options: CommandOptions): Promise<void> {
+    this.logger.log(`Options: ${JSON.stringify(options)}`);
+    this.logger.log(options.verbose);
     const yamlFileContents = await this.yamlParserService.readFile(
       options.yamlPath,
     );
