@@ -1,4 +1,4 @@
-import {TestBed} from '@automock/jest';
+import {TestBed} from '@suites/unit';
 
 import {YamlParserService} from './yaml-parser.service';
 
@@ -6,7 +6,7 @@ describe('YamlParserService', () => {
   let service: YamlParserService;
 
   beforeEach(async () => {
-    const {unit} = TestBed.create(YamlParserService).compile();
+    const {unit} = await TestBed.solitary(YamlParserService).compile();
     service = unit;
   });
 

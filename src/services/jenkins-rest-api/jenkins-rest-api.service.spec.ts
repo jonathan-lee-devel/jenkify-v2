@@ -1,4 +1,4 @@
-import {TestBed} from '@automock/jest';
+import {TestBed} from '@suites/unit';
 
 import {JenkinsRestApiService} from './jenkins-rest-api.service';
 
@@ -6,7 +6,7 @@ describe('JenkinsRestApiService', () => {
   let service: JenkinsRestApiService;
 
   beforeEach(async () => {
-    const {unit} = TestBed.create(JenkinsRestApiService).compile();
+    const {unit} = await TestBed.solitary(JenkinsRestApiService).compile();
     service = unit;
   });
 
