@@ -1,4 +1,4 @@
-import {HttpModule, HttpService} from '@nestjs/axios';
+import {HttpModule} from '@nestjs/axios';
 import {Logger, Module} from '@nestjs/common';
 import {ConfigModule} from '@nestjs/config';
 
@@ -16,6 +16,7 @@ import {YamlParserService} from './services/yaml-parser/yaml-parser.service';
     HttpModule.registerAsync({
       imports: [ConfigModule],
       useExisting: HttpConfigService,
+      extraProviders: [HttpConfigService],
     }),
   ],
   controllers: [],
@@ -24,10 +25,10 @@ import {YamlParserService} from './services/yaml-parser/yaml-parser.service';
       provide: Logger,
       useFactory: () => new Logger('Jenkify-v2'),
     },
+    HttpConfigService,
     StartBuildCommand,
     StartBuildsCommand,
     TrackBuildsCommand,
-    HttpService,
     JenkinsRestApiService,
     JenkinsWfApiService,
     YamlParserService,
