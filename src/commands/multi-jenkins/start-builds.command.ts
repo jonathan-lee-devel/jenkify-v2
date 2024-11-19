@@ -34,9 +34,15 @@ export class StartBuildsCommand extends BaseCommand {
       this.logger.verbose(`Processing host: ${JSON.stringify(host)}`);
       host.jobs.forEach(async (job) => {
         const response = await this.processJob(host, job);
-        this.logger.log(
-          `Is ${job.path} started successfully: ${response?.buildResponse?.isSuccessfullyKickedOff ?? false} with build number: #${response?.mostRecentBuildNumber}`,
-        );
+        if (response?.buildResponse?.isSuccessfullyKickedOff) {
+          this.logger.log(
+            `${job.path} started successfully with build number: #${response?.mostRecentBuildNumber}`,
+          );
+        } else {
+          this.logger.error(
+            `Failed to kick off build for ${job.path} on ${host.url}`,
+          );
+        }
       });
     });
   }

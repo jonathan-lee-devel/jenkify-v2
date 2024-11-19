@@ -1,6 +1,7 @@
 import {HttpService} from '@nestjs/axios';
 import {HttpStatus, Injectable, Logger} from '@nestjs/common';
-import {catchError, firstValueFrom, throwError} from 'rxjs';
+import {AxiosResponse} from 'axios';
+import {catchError, firstValueFrom, of, throwError} from 'rxjs';
 
 import {JenkinsBuildInformation} from '../../models/jenkins-rest-api/JenkinsBuildInformation.model';
 import {Parameter} from '../../models/multi-jenkins/Parameter.model';
@@ -73,14 +74,17 @@ export class JenkinsRestApiService {
       const queryParams = new URLSearchParams(object);
       buildPath = `WithParameters?${queryParams.toString()}`;
     }
-    const response = await firstValueFrom(
+    const response = (await firstValueFrom(
       this.httpService.post(`${host}/${path}/build${buildPath}`).pipe(
         catchError((err) => {
-          this.logger.error(`Failed to kick off build`, err);
-          return throwError(() => err);
+          this.logger.error(
+            `Failed to kick off build: ${host}/${path}/build${buildPath}`,
+            err,
+          );
+          return of(null);
         }),
       ),
-    );
+    )) as AxiosResponse<unknown>;
     if (response?.status !== HttpStatus.CREATED) {
       this.logger.error(`Failed to kick off build for ${host}/${path}`);
       return {isSuccessfullyKickedOff: false};
