@@ -34,6 +34,31 @@ export class JenkinsRestApiService {
     return response.data as JenkinsBuildInformation;
   }
 
+  async getSpecificBuildInformation(
+    host: string,
+    path: string,
+    buildNumber: number,
+  ) {
+    const response = await firstValueFrom(
+      this.httpService.get(`${host}/${path}/${buildNumber}/api/json`).pipe(
+        catchError((err) => {
+          this.logger.error(
+            `Failed to get build information for ${host}/${path}/${buildNumber}`,
+            err,
+          );
+          return throwError(() => err);
+        }),
+      ),
+    );
+    if (response?.status !== HttpStatus.OK) {
+      this.logger.error(
+        `Response status not 200 OK for ${host}/${path}/${buildNumber}`,
+      );
+      return null;
+    }
+    return response.data;
+  }
+
   async kickOffBuild(
     host: string,
     path: string,

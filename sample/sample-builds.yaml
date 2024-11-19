@@ -18,4 +18,4 @@ build:
                   value: 'Test'
                 - name: 'Test'
                   value: 'Test'
-        - path: 'job/SomeOtherJob'
+#        - path: 'job/SomeOtherJob'

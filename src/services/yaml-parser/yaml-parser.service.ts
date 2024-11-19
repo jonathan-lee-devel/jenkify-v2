@@ -4,6 +4,7 @@ import {Injectable, Logger} from '@nestjs/common';
 import * as YAML from 'yaml';
 
 import {StartBuilds} from '../../models/multi-jenkins/start/StartBuilds.model';
+import {TrackBuilds} from '../../models/multi-jenkins/tracking/TrackBuilds.model';
 
 @Injectable()
 export class YamlParserService {
@@ -22,5 +23,10 @@ export class YamlParserService {
   async parseStartBuildsYaml(yamlFileContents: string): Promise<StartBuilds> {
     const data = await YAML.parse(yamlFileContents);
     return data as StartBuilds;
+  }
+
+  async parseTrackBuildsYaml(yamlFileContents: string): Promise<TrackBuilds> {
+    const data = await YAML.parse(yamlFileContents);
+    return data as TrackBuilds;
   }
 }
