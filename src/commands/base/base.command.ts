@@ -10,7 +10,7 @@ export abstract class BaseCommand extends CommandRunner {
     description: 'Whether to log verbosely',
     required: false,
   })
-  protected parseVerbose(val: string): string {
+  protected parseVerbose(val: boolean): boolean {
     return val;
   }
 }
