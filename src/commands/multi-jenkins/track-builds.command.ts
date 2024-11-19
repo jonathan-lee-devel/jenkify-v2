@@ -33,6 +33,9 @@ export class TrackBuildsCommand extends BaseCommand {
       this.logger.verbose(`Processing host: ${JSON.stringify(host)}`);
       host.jobs.forEach(async (job) => {
         const response = await this.processJob(host, job);
+        if (!response) {
+          return;
+        }
         if (response.result === 'SUCCESS') {
           this.logger.log(`Job ${response.fullDisplayName} succeeded`);
         }
@@ -49,12 +52,20 @@ export class TrackBuildsCommand extends BaseCommand {
     return val;
   }
 
-  private async processJob(host: TrackBuildsHost, job: TrackJob) {
-    const data = await this.jenkinsRestApiService.getSpecificBuildInformation(
-      host.url,
-      job.path,
-      job.buildIndex,
-    );
+  private async processJob(
+    host: TrackBuildsHost,
+    job: TrackJob,
+  ): Promise<JenkinsSpecificBuildInformation | null> {
+    let data: JenkinsSpecificBuildInformation;
+    try {
+      data = await this.jenkinsRestApiService.getSpecificBuildInformation(
+        host.url,
+        job.path,
+        job.buildIndex,
+      );
+    } catch (err) {
+      this.logger.error(err);
+    }
     return data as JenkinsSpecificBuildInformation;
   }
 }

@@ -1,7 +1,7 @@
 build:
   hosts:
   - jobs:
-    - buildIndex: 126
+    - buildIndex: 2126
       path: job/TestJob
       status: UNKNOWN
     - buildIndex: 110
