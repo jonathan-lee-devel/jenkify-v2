@@ -1,6 +1,7 @@
 import {Logger} from '@nestjs/common';
 import {Command, Option} from 'nest-commander';
 
+import {JenkinsBuildInformation} from '../../models/jenkins-rest-api/JenkinsBuildInformation.model';
 import {StartBuildsHost} from '../../models/multi-jenkins/start/StartBuildsHost.model';
 import {StartJob} from '../../models/multi-jenkins/start/StartJob.model';
 import {JenkinsRestApiService} from '../../services/jenkins-rest-api/jenkins-rest-api.service';
@@ -56,10 +57,15 @@ export class StartBuildsCommand extends BaseCommand {
     buildResponse: {isSuccessfullyKickedOff: boolean};
     mostRecentBuildNumber: number;
   }> {
-    const jobInfo = await this.jenkinsRestApiService.getBuildInformation(
-      host.url,
-      job.path,
-    );
+    let jobInfo: JenkinsBuildInformation;
+    try {
+      jobInfo = await this.jenkinsRestApiService.getBuildInformation(
+        host.url,
+        job.path,
+      );
+    } catch (err) {
+      this.logger.error(err);
+    }
     if (!jobInfo?.lastBuild) {
       return;
     }
