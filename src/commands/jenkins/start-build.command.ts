@@ -9,7 +9,7 @@ export class StartBuildCommand extends BaseCommand {
     super();
   }
 
-  async run(
+  override async run(
     passedParams: string[],
     options?: Record<string, any>,
   ): Promise<void> {
