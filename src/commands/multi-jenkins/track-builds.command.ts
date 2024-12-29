@@ -65,15 +65,6 @@ export class TrackBuildsCommand extends BaseCommand {
         timeout(options.timeout * 1000),
         takeUntil(this.completeTracking),
         tap(() => {
-          if (
-            buildStatusTracker.completeOrUnrecoverableBuildStatuses.length ===
-            totalToProcess
-          ) {
-            this.completeTracking.next(true);
-            this.completeTracking.complete();
-          }
-        }),
-        tap(() => {
           const newBuildStatuses: BuildStatusDto[] = [];
           buildStatusTracker.buildStatuses.forEach(async (buildStatus) => {
             const isCompleteOrUnrecoverable = await this.processJob(
@@ -96,6 +87,15 @@ export class TrackBuildsCommand extends BaseCommand {
           this.logger.log(
             `Tracking progress: ${buildStatusTracker.completeOrUnrecoverableBuildStatuses.length ?? 0}/${totalToProcess}`,
           );
+        }),
+        tap(() => {
+          if (
+            buildStatusTracker.completeOrUnrecoverableBuildStatuses.length ===
+            totalToProcess
+          ) {
+            this.completeTracking.next(true);
+            this.completeTracking.complete();
+          }
         }),
         finalize(() => {
           this.logger.log('Tracking complete');
