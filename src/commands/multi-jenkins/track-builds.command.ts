@@ -148,7 +148,7 @@ export class TrackBuildsCommand extends BaseCommand {
     }
     if (!buildInfo || !buildInfo?.result) {
       this.logger.log(
-        `No build info found for ${job.path} on ${host.url} on this attempt`,
+        `No build info found for ${job.path} ${job.buildIndex} on ${host.url} on this attempt`,
       );
       return false;
     }
