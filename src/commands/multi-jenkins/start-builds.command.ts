@@ -4,6 +4,9 @@ import {Command, Option} from 'nest-commander';
 import {JenkinsBuildInformation} from '../../models/jenkins-rest-api/JenkinsBuildInformation.model';
 import {StartBuildsHost} from '../../models/multi-jenkins/start/StartBuildsHost.model';
 import {StartJob} from '../../models/multi-jenkins/start/StartJob.model';
+import {TrackBuilds} from '../../models/multi-jenkins/tracking/TrackBuilds.model';
+import {TrackBuildsHost} from '../../models/multi-jenkins/tracking/TrackBuildsHost.model';
+import {TrackJob} from '../../models/multi-jenkins/tracking/TrackJob.model';
 import {JenkinsRestApiService} from '../../services/jenkins-rest-api/jenkins-rest-api.service';
 import {YamlParserService} from '../../services/yaml-parser/yaml-parser.service';
 import {BaseCommand, BaseCommandOptions} from '../base/base.command';
@@ -33,11 +36,16 @@ export class StartBuildsCommand extends BaseCommand {
     );
     const startBuilds =
       await this.yamlParserService.parseStartBuildsYaml(yamlFileContents);
-    startBuilds.build.hosts.forEach((host) => {
+    const buildIndexMap: Map<string, number> = new Map<string, number>();
+    for (const host of startBuilds.build.hosts) {
       this.logger.verbose(`Processing host: ${JSON.stringify(host)}`);
-      host.jobs.forEach(async (job) => {
+      for (const job of host.jobs) {
         const response = await this.processJob(host, job);
         if (response?.buildResponse?.isSuccessfullyKickedOff) {
+          buildIndexMap.set(
+            `${host.url}/${job.path}`,
+            response.mostRecentBuildNumber + 1,
+          );
           this.logger.log(
             `${job.path} started successfully with build number: #${response?.mostRecentBuildNumber}`,
           );
@@ -46,8 +54,43 @@ export class StartBuildsCommand extends BaseCommand {
             `Failed to kick off build for ${job.path} on ${host.url}`,
           );
         }
-      });
-    });
+      }
+    }
+    this.logger.log('Build index map:');
+    for (const [key, value] of buildIndexMap) {
+      this.logger.log(`${key} => ${value}`);
+    }
+    const trackBuilds: TrackBuilds = {
+      build: {
+        hosts: [
+          ...startBuilds.build.hosts.map((startHost): TrackBuildsHost => {
+            return {
+              url: startHost.url,
+              jobs: [
+                ...startHost.jobs.map((startJob): TrackJob => {
+                  return {
+                    path: startJob.path,
+                    buildParameters: startJob.buildParameters,
+                    status: 'UNKNOWN',
+                    buildIndex:
+                      buildIndexMap.get(`${startHost.url}/${startJob.path}`) ??
+                      -1,
+                  };
+                }),
+              ],
+            };
+          }),
+        ],
+      },
+    };
+    for (const host of trackBuilds.build.hosts) {
+      host.jobs = host.jobs.filter((job) => job.buildIndex !== -1);
+    }
+    await this.yamlParserService.writeYamlFile(
+      options.yamlPath.replace('.yaml', '-tracking.yaml'),
+      trackBuilds,
+    );
+    this.logger.log('Start builds complete');
   }
 
   @Option({

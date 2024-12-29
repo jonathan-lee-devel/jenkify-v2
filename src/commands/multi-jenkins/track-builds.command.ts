@@ -1,14 +1,6 @@
 import {Logger} from '@nestjs/common';
 import {Command, Option} from 'nest-commander';
-import {
-  finalize,
-  interval,
-  startWith,
-  Subject,
-  takeUntil,
-  tap,
-  timeout,
-} from 'rxjs';
+import {finalize, interval, startWith, Subject, takeUntil, tap} from 'rxjs';
 
 import {BuildStatusDto} from '../../domain/BuildStatus.dto';
 import {BuildStatusTrackerDto} from '../../domain/BuildStatusTracker.dto';
@@ -59,10 +51,10 @@ export class TrackBuildsCommand extends BaseCommand {
     this.logger.log(`Tracking interval: ${options.interval}ms`);
     this.logger.log(`Tracking timeout: ${options.timeout}s`);
     const buildStatusTracker = this.generateBuildStatusTrackerDto(trackBuilds);
+    let intervalCount = 0;
     interval(options.interval)
       .pipe(
         startWith(0),
-        timeout(options.timeout * 1000),
         takeUntil(this.completeTracking),
         tap(() => {
           const newBuildStatuses: BuildStatusDto[] = [];
@@ -93,6 +85,16 @@ export class TrackBuildsCommand extends BaseCommand {
             buildStatusTracker.completeOrUnrecoverableBuildStatuses.length ===
             totalToProcess
           ) {
+            this.completeTracking.next(true);
+            this.completeTracking.complete();
+          }
+        }),
+        tap(() => intervalCount++),
+        tap(() => {
+          if (intervalCount * options.interval >= options.timeout * 1000) {
+            this.logger.error(
+              `Tracking timeout of ${options.timeout}s reached`,
+            );
             this.completeTracking.next(true);
             this.completeTracking.complete();
           }

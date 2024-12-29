@@ -1,21 +1,21 @@
 build:
   hosts:
-  - jobs:
-    - buildIndex: 153
-      path: job/TestJob
-      status: UNKNOWN
-    - buildIndex: 135
-      buildParameters:
-      - name: GIT_BRANCH
-        value: staging
-      - name: DEPLOY_TO_PROD
-        value: 'false'
-      path: job/AnotherTestJob
-      status: UNKNOWN
-    - buildIndex: 127
-      path: job/LongRunningJob
-      status: UNKNOWN
-    - buildIndex: 81
-      path: job/User_Input_Job
-      status: UNKNOWN
-    url: http://localhost:8080
+    - url: http://localhost:8080
+      jobs:
+        - path: job/TestJob
+          status: UNKNOWN
+          buildIndex: 161
+        - path: job/AnotherTestJob
+          buildParameters:
+            - name: GIT_BRANCH
+              value: staging
+            - name: DEPLOY_TO_PROD
+              value: "false"
+          status: UNKNOWN
+          buildIndex: 143
+        - path: job/LongRunningJob
+          status: UNKNOWN
+          buildIndex: 136
+        - path: job/User_Input_Job
+          status: UNKNOWN
+          buildIndex: 92

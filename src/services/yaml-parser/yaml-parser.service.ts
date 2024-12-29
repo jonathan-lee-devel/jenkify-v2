@@ -15,9 +15,9 @@ export class YamlParserService {
     return fs.readFileSync(filePath, 'utf8');
   }
 
-  async writeFile(filePath: string, content: string): Promise<void> {
+  async writeYamlFile(filePath: string, content: unknown): Promise<void> {
     this.logger.verbose(`Writing to file: ${filePath}`);
-    return fs.writeFileSync(filePath, content, 'utf8');
+    return fs.writeFileSync(filePath, YAML.stringify(content), 'utf8');
   }
 
   async parseStartBuildsYaml(yamlFileContents: string): Promise<StartBuilds> {

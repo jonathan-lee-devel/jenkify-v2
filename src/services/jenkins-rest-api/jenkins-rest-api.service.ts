@@ -1,7 +1,7 @@
 import {HttpService} from '@nestjs/axios';
 import {HttpStatus, Injectable, Logger} from '@nestjs/common';
 import {AxiosResponse} from 'axios';
-import {catchError, firstValueFrom, of, throwError} from 'rxjs';
+import {catchError, firstValueFrom, of} from 'rxjs';
 
 import {JenkinsBuildInformation} from '../../models/jenkins-rest-api/JenkinsBuildInformation.model';
 import {Parameter} from '../../models/multi-jenkins/Parameter.model';
@@ -24,7 +24,7 @@ export class JenkinsRestApiService {
             `Failed to get build information for ${host}/${path}`,
             err,
           );
-          return throwError(() => err);
+          return of(null);
         }),
       ),
     );
@@ -47,17 +47,11 @@ export class JenkinsRestApiService {
             `Failed to get build information for ${host}/${path}/${buildNumber}`,
             err,
           );
-          return throwError(() => err);
+          return of(null);
         }),
       ),
     );
-    if (response?.status !== HttpStatus.OK) {
-      this.logger.error(
-        `Response status not 200 OK for ${host}/${path}/${buildNumber}`,
-      );
-      return null;
-    }
-    return response.data;
+    return response?.data;
   }
 
   async kickOffBuild(
