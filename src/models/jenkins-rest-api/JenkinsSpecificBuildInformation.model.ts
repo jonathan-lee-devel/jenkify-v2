@@ -3,7 +3,9 @@ export type JenkinsBuildStatus =
   | 'FAILURE'
   | 'UNSTABLE'
   | 'ABORTED'
-  | 'NOT_BUILT';
+  | 'NOT_BUILT'
+  | 'IN_PROGRESS'
+  | 'UNKNOWN';
 
 export interface JenkinsSpecificBuildInformation {
   result: JenkinsBuildStatus;

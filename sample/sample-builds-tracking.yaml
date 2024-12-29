@@ -1,10 +1,10 @@
 build:
   hosts:
   - jobs:
-    - buildIndex: 2126
+    - buildIndex: 150
       path: job/TestJob
       status: UNKNOWN
-    - buildIndex: 110
+    - buildIndex: 111
       buildParameters:
       - name: GIT_BRANCH
         value: staging
@@ -12,10 +12,10 @@ build:
         value: 'false'
       path: job/AnotherTestJob
       status: UNKNOWN
-    - buildIndex: 100
+    - buildIndex: 124
       path: job/LongRunningJob
       status: UNKNOWN
-    - buildIndex: 37
+    - buildIndex: 38
       path: job/User_Input_Job
       status: UNKNOWN
     url: http://localhost:8080
