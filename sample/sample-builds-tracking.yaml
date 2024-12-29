@@ -1,10 +1,10 @@
 build:
   hosts:
   - jobs:
-    - buildIndex: 150
+    - buildIndex: 152
       path: job/TestJob
       status: UNKNOWN
-    - buildIndex: 111
+    - buildIndex: 134
       buildParameters:
       - name: GIT_BRANCH
         value: staging
@@ -12,7 +12,7 @@ build:
         value: 'false'
       path: job/AnotherTestJob
       status: UNKNOWN
-    - buildIndex: 124
+    - buildIndex: 126
       path: job/LongRunningJob
       status: UNKNOWN
     - buildIndex: 38

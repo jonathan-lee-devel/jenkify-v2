@@ -1,8 +1,19 @@
 import {Logger} from '@nestjs/common';
 import {Command, Option} from 'nest-commander';
-import {finalize, interval, startWith, Subject, takeUntil, tap} from 'rxjs';
+import {
+  finalize,
+  interval,
+  startWith,
+  Subject,
+  takeUntil,
+  tap,
+  timeout,
+} from 'rxjs';
 
+import {BuildStatusDto} from '../../domain/BuildStatus.dto';
+import {BuildStatusTrackerDto} from '../../domain/BuildStatusTracker.dto';
 import {JenkinsSpecificBuildInformation} from '../../models/jenkins-rest-api/JenkinsSpecificBuildInformation.model';
+import {TrackBuilds} from '../../models/multi-jenkins/tracking/TrackBuilds.model';
 import {TrackBuildsHost} from '../../models/multi-jenkins/tracking/TrackBuildsHost.model';
 import {TrackJob} from '../../models/multi-jenkins/tracking/TrackJob.model';
 import {JenkinsRestApiService} from '../../services/jenkins-rest-api/jenkins-rest-api.service';
@@ -45,41 +56,50 @@ export class TrackBuildsCommand extends BaseCommand {
       0,
     );
     this.logger.log(`Total # jobs to track and process: ${totalToProcess}`);
-    let intervalCounter = 0;
+    this.logger.log(`Tracking interval: ${options.interval}ms`);
+    this.logger.log(`Tracking timeout: ${options.timeout}s`);
+    const buildStatusTracker = this.generateBuildStatusTrackerDto(trackBuilds);
     interval(options.interval)
       .pipe(
         startWith(0),
-        finalize(() => this.logger.log('Tracking complete')),
+        timeout(options.timeout * 1000),
         takeUntil(this.completeTracking),
         tap(() => {
-          let count = 0;
-          trackBuilds.build.hosts.forEach((host) => {
-            this.logger.verbose(`Processing host: ${JSON.stringify(host)}`);
-            host.jobs.forEach(async (job) => {
-              const response = await this.processJob(host, job);
-              if (!response) {
-                if (intervalCounter > options.timeout / options.interval - 1) {
-                  count++;
-                  this.completeTrackingIfCountReached(count, totalToProcess);
-                }
-                return;
-              }
-              this.logger.log(
-                `Job ${response.fullDisplayName} is status: ${response.result}`,
-              );
-              if (
-                !response?.result ||
-                response.result === 'IN_PROGRESS' ||
-                response.result === 'UNKNOWN'
-              ) {
-                return;
-              }
-              count++;
-              this.completeTrackingIfCountReached(count, totalToProcess);
-            });
-          });
+          if (
+            buildStatusTracker.completeOrUnrecoverableBuildStatuses.length ===
+            totalToProcess
+          ) {
+            this.completeTracking.next(true);
+            this.completeTracking.complete();
+          }
         }),
-        tap(() => intervalCounter++),
+        tap(() => {
+          const newBuildStatuses: BuildStatusDto[] = [];
+          buildStatusTracker.buildStatuses.forEach(async (buildStatus) => {
+            const isCompleteOrUnrecoverable = await this.processJob(
+              buildStatus.host,
+              buildStatus.job,
+            );
+            if (!isCompleteOrUnrecoverable) {
+              newBuildStatuses.push(buildStatus);
+            } else {
+              buildStatusTracker.completeOrUnrecoverableBuildStatuses =
+                Array.from(
+                  new Set([
+                    ...buildStatusTracker.completeOrUnrecoverableBuildStatuses,
+                    buildStatus,
+                  ]),
+                );
+            }
+          });
+          buildStatusTracker.buildStatuses = newBuildStatuses;
+          this.logger.log(
+            `Tracking progress: ${buildStatusTracker.completeOrUnrecoverableBuildStatuses.length ?? 0}/${totalToProcess}`,
+          );
+        }),
+        finalize(() => {
+          this.logger.log('Tracking complete');
+        }),
       )
       .subscribe();
   }
@@ -104,7 +124,7 @@ export class TrackBuildsCommand extends BaseCommand {
 
   @Option({
     flags: '-t, --timeout [number]',
-    description: 'Timeout in milliseconds',
+    description: 'Timeout in seconds',
     required: true,
   })
   parseTimeout(val: number): number {
@@ -114,27 +134,45 @@ export class TrackBuildsCommand extends BaseCommand {
   private async processJob(
     host: TrackBuildsHost,
     job: TrackJob,
-  ): Promise<JenkinsSpecificBuildInformation | null> {
-    let data: JenkinsSpecificBuildInformation;
+  ): Promise<boolean> {
+    let buildInfo: JenkinsSpecificBuildInformation;
     try {
-      data = await this.jenkinsRestApiService.getSpecificBuildInformation(
+      buildInfo = await this.jenkinsRestApiService.getSpecificBuildInformation(
         host.url,
         job.path,
         job.buildIndex,
       );
     } catch (err) {
       this.logger.error(err);
+      return false;
     }
-    return data as JenkinsSpecificBuildInformation;
+    if (!buildInfo || !buildInfo?.result) {
+      this.logger.log(
+        `No build info found for ${job.path} on ${host.url} on this attempt`,
+      );
+      return false;
+    }
+    if (
+      buildInfo.result === 'SUCCESS' ||
+      buildInfo.result === 'UNSTABLE' ||
+      buildInfo.result === 'ABORTED'
+    ) {
+      this.logger.log(`Build ${job.path} on ${host.url} ${buildInfo.result}`);
+      return true;
+    }
+
+    return false;
   }
 
-  private completeTrackingIfCountReached(
-    count: number,
-    totalToProcess: number,
-  ) {
-    if (count === totalToProcess) {
-      this.completeTracking.next(true);
-      this.completeTracking.complete();
+  private generateBuildStatusTrackerDto(
+    trackBuilds: TrackBuilds,
+  ): BuildStatusTrackerDto {
+    const buildStatuses: BuildStatusDto[] = [];
+    for (const host of trackBuilds.build.hosts) {
+      for (const job of host.jobs) {
+        buildStatuses.push(new BuildStatusDto(host, job));
+      }
     }
+    return new BuildStatusTrackerDto(buildStatuses);
   }
 }
