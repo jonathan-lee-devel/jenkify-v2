@@ -20,7 +20,7 @@ export class JenkinsRestApiService {
     const response = await firstValueFrom(
       this.httpService.get(`${host}/${path}/api/json`).pipe(
         catchError((err) => {
-          this.logger.error(
+          this.logger.verbose(
             `Failed to get build information for ${host}/${path}`,
             err,
           );
@@ -29,7 +29,7 @@ export class JenkinsRestApiService {
       ),
     );
     if (response?.status !== HttpStatus.OK) {
-      this.logger.error(`Response status not 200 OK for ${host}/${path}`);
+      this.logger.verbose(`Response status not 200 OK for ${host}/${path}`);
       return null;
     }
     return response.data as JenkinsBuildInformation;
@@ -43,7 +43,7 @@ export class JenkinsRestApiService {
     const response = await firstValueFrom(
       this.httpService.get(`${host}/${path}/${buildNumber}/api/json`).pipe(
         catchError((err) => {
-          this.logger.error(
+          this.logger.verbose(
             `Failed to get build information for ${host}/${path}/${buildNumber}`,
             err,
           );
@@ -71,7 +71,7 @@ export class JenkinsRestApiService {
     const response = (await firstValueFrom(
       this.httpService.post(`${host}/${path}/build${buildPath}`).pipe(
         catchError((err) => {
-          this.logger.error(
+          this.logger.verbose(
             `Failed to kick off build: ${host}/${path}/build${buildPath}`,
             err,
           );
@@ -80,7 +80,7 @@ export class JenkinsRestApiService {
       ),
     )) as AxiosResponse<unknown>;
     if (response?.status !== HttpStatus.CREATED) {
-      this.logger.error(`Failed to kick off build for ${host}/${path}`);
+      this.logger.verbose(`Failed to kick off build for ${host}/${path}`);
       return {isSuccessfullyKickedOff: false};
     }
     this.logger.log(`Kicked off build for ${host}/${path}`);

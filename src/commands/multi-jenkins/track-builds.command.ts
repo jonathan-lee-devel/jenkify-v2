@@ -77,7 +77,7 @@ export class TrackBuildsCommand extends BaseCommand {
           });
           buildStatusTracker.buildStatuses = newBuildStatuses;
           this.logger.log(
-            `Tracking progress: ${buildStatusTracker.completeOrUnrecoverableBuildStatuses.length ?? 0}/${totalToProcess}`,
+            `Tracking progress: ${buildStatusTracker.completeOrUnrecoverableBuildStatuses.length ?? 0}/${totalToProcess} complete or unrecoverable builds`,
           );
         }),
         tap(() => {
