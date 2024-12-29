@@ -9,7 +9,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const configService = app.get<ConfigService>(ConfigService);
   let loggerLevels: LogLevel[] = ['log', 'warn', 'error', 'fatal'];
-  if (configService.get('VERBOSE')) {
+  if (configService.get('VERBOSE') === true) {
     loggerLevels = [...loggerLevels, 'debug', 'verbose'];
   }
   await CommandFactory.run(AppModule, {
