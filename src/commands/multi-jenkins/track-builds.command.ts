@@ -20,7 +20,7 @@ interface CommandOptions extends BaseCommandOptions {
 
 @Command({name: 'track-builds', description: 'Track multiple builds'})
 export class TrackBuildsCommand extends BaseCommand {
-  private readonly completeTracking: Subject<boolean>;
+  private readonly completeTracking: Subject<void>;
 
   constructor(
     private readonly logger: Logger,
@@ -28,7 +28,7 @@ export class TrackBuildsCommand extends BaseCommand {
     private readonly jenkinsRestApiService: JenkinsRestApiService,
   ) {
     super();
-    this.completeTracking = new Subject<boolean>();
+    this.completeTracking = new Subject<void>();
   }
 
   override async run(
@@ -85,7 +85,7 @@ export class TrackBuildsCommand extends BaseCommand {
             buildStatusTracker.completeOrUnrecoverableBuildStatuses.length ===
             totalToProcess
           ) {
-            this.completeTracking.next(true);
+            this.completeTracking.next();
             this.completeTracking.complete();
           }
         }),
@@ -95,7 +95,7 @@ export class TrackBuildsCommand extends BaseCommand {
             this.logger.error(
               `Tracking timeout of ${options.timeout}s reached`,
             );
-            this.completeTracking.next(true);
+            this.completeTracking.next();
             this.completeTracking.complete();
           }
         }),

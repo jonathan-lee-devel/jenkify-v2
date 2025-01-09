@@ -4,6 +4,7 @@ import {AxiosResponse} from 'axios';
 import {catchError, firstValueFrom, of} from 'rxjs';
 
 import {JenkinsBuildInformation} from '../../models/jenkins-rest-api/JenkinsBuildInformation.model';
+import {JenkinsSpecificBuildInformation} from '../../models/jenkins-rest-api/JenkinsSpecificBuildInformation.model';
 import {Parameter} from '../../models/multi-jenkins/Parameter.model';
 
 @Injectable()
@@ -51,7 +52,7 @@ export class JenkinsRestApiService {
         }),
       ),
     );
-    return response?.data;
+    return response?.data as JenkinsSpecificBuildInformation;
   }
 
   async kickOffBuild(

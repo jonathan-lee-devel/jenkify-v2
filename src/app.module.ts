@@ -3,6 +3,7 @@ import {Logger, Module} from '@nestjs/common';
 import {ConfigModule} from '@nestjs/config';
 
 import {StartBuildCommand} from './commands/jenkins/start-build.command';
+import {CompleteBuildsCommand} from './commands/multi-jenkins/complete-builds.command';
 import {StartBuildsCommand} from './commands/multi-jenkins/start-builds.command';
 import {TrackBuildsCommand} from './commands/multi-jenkins/track-builds.command';
 import {HttpConfigService} from './config/http-config/http-config.service';
@@ -29,6 +30,7 @@ import {YamlParserService} from './services/yaml-parser/yaml-parser.service';
     StartBuildCommand,
     StartBuildsCommand,
     TrackBuildsCommand,
+    CompleteBuildsCommand,
     JenkinsRestApiService,
     JenkinsWfApiService,
     YamlParserService,

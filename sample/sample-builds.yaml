@@ -1,6 +1,6 @@
 build:
   hosts:
-    - url: 'http://localhost:8080'
+    - url: 'http://localhost:8000'
       jobs:
         - path: 'job/TestJob'
         - path: 'job/AnotherTestJob'
